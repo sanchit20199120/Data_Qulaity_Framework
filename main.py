@@ -29,15 +29,24 @@ def data_quality_check(arg):
 
         # connecting to snowflake account
         print("Connecting to Snowflake....")
-        conn = snowflake.connector.connect(user = log_dsn_name['id'], password =log_dsn_name['secret'], account =log_dsn_name['host'], database = log_dsn_name['database'])
+        conn = snowflake.connector.connect(user=log_dsn_name['id'], password=log_dsn_name['secret'], account =log_dsn_name['host'], database = log_dsn_name['database'])
 
         if not conn:
             log.info("Credentials provide to connect to Snowflake is incorrect")
             sys.exit("Credentials provide to connect to Snowflake is incorrect")
         else:
             log.info("Connected to Snowflake")
+            print("Connected to Snowflake")
 
+        dq_check_job_seq = pd.read_sql_query("SELECT SCDP"+env+"_DB.QUALITY.TEST_AUTMATION_JOB_SEQ.nextval",conn)
+        job_id = str(dq_check_job_seq.iloc[0, 0])
+        log.info("data qulaity check for workstream "+ workstream_name + " and data source " + data_src_name + " started.....")
 
+        # running Stored Procedure
+        print()
+        dq_check_call_rule_master = pd.read_sql_query("CALL <PROCEDURE_NAME(PARAMETERS>",conn)
+        dq_check_call_rule_master_status = str(dq_check_call_rule_master.iloc[0, 0])
+        print(dq_check_call_rule_master_status)
 
     except BaseException as e:
         print(e)
